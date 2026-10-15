@@ -11,7 +11,7 @@ Play it at **https://pdobson1.github.io/play-your-caps-right/**
 1. Runs the parser tests.
 2. Reads each player's Wikipedia article and takes the England senior caps from its infobox (`scripts/update-caps.mjs`).
 3. Adds anyone in the current England squad who isn't in the deck yet. New players get a plain silhouette until someone gives them a `look`.
-4. Stamps today's date as `updated` (shown on the site as "Data accurate as of …"), commits the file and redeploys GitHub Pages.
+4. Stamps today's date as `updated` (shown on the site as "Data accurate as of …") and commits the file. GitHub Pages builds from `main`, so the commit redeploys the site.
 
 If more than half the players can't be read, the run fails and nothing changes. The log lists any player whose page couldn't be read, usually because the `wiki` title points at a disambiguation page.
 

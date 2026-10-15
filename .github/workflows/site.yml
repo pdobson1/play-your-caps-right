@@ -1,8 +1,7 @@
-name: Update caps and deploy
+name: Update caps
 
+# GitHub Pages builds from main, so each data commit redeploys the site on its own.
 on:
-  push:
-    branches: [main]
   schedule:
     # Wednesdays and Sundays at 06:23 UTC, the mornings after most international-window matches
     - cron: "23 6 * * 0,3"
@@ -10,17 +9,13 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: site
+  group: update-caps
   cancel-in-progress: false
 
 jobs:
   update-caps:
-    # Pushes deploy straight away; scheduled and manual runs refresh the data first.
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,26 +36,3 @@ jobs:
           git commit -m "Update England caps from Wikipedia"
           git push
 
-  deploy:
-    needs: update-caps
-    if: ${{ !cancelled() && (needs.update-caps.result == 'success' || needs.update-caps.result == 'skipped') }}
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Collect site files
-        run: |
-          mkdir _site
-          cp -r index.html data _site/
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-      - id: deployment
-        uses: actions/deploy-pages@v4
