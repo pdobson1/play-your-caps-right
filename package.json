@@ -1,0 +1,13 @@
+{
+  "name": "play-your-caps-right",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Higher-or-lower with England men's footballers and their caps.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "update-caps": "node scripts/update-caps.mjs",
+    "serve": "python3 -m http.server 8000"
+  }
+}

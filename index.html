@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play Your Caps Right</title>
+<meta name="description" content="Higher or lower with England men's footballers and their caps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+/* Layout: one-screen arcade table on a mown pitch — scoreboard strip, two cards side by side, two chunky buttons, high scores below. Deliberately single-theme. */
+:root {
+  --pitch: #2f7d34;
+  --pitch-2: #2a7230;
+  --pitch-deep: #1d5222;
+  --chalk: #f6f3e6;
+  --card: #fbf7ea;
+  --ink: #17203d;
+  --navy: #1b2a5a;
+  --red: #c8102e;
+  --red-deep: #8f0b20;
+  --gold: #f2c230;
+  --muted: #5d6476;
+  --shadow: rgba(0, 0, 0, .38);
+  --f-display: "Press Start 2P", ui-monospace, "Courier New", monospace;
+  --f-body: "VT323", ui-monospace, "Courier New", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--pitch);
+  background-image: repeating-linear-gradient(180deg, var(--pitch) 0 64px, var(--pitch-2) 64px 128px);
+  color: var(--chalk);
+  font-family: var(--f-body);
+  font-size: 22px;
+  line-height: 1.2;
+}
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+  display: grid;
+  gap: 18px;
+}
+/* Scoreboard */
+.board {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--ink);
+  border: 3px solid var(--chalk);
+  box-shadow: 4px 4px 0 var(--shadow);
+  padding: 12px 14px;
+}
+h1 {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(14px, 3.4vw, 22px);
+  line-height: 1.35;
+  letter-spacing: .02em;
+  text-wrap: balance;
+  color: var(--chalk);
+  text-shadow: 3px 3px 0 var(--red);
+}
+h1 em { font-style: normal; color: var(--gold); }
+.stats { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.stat { display: grid; gap: 4px; text-align: right; }
+.stat b { font-family: var(--f-display); font-size: 9px; letter-spacing: .12em; color: var(--gold); font-weight: 400; }
+.stat span { font-family: var(--f-display); font-size: 16px; font-variant-numeric: tabular-nums; }
+.mute {
+  font-family: var(--f-display); font-size: 9px; letter-spacing: .08em;
+  background: transparent; color: var(--chalk); border: 2px solid var(--chalk);
+  padding: 6px 7px; cursor: pointer;
+}
+.mute[aria-pressed="true"] { color: var(--muted); border-color: var(--muted); }
+
+.prompt {
+  margin: 0;
+  min-height: 2.6em;
+  font-size: clamp(22px, 4.2vw, 30px);
+  text-align: center;
+  text-wrap: balance;
+  text-shadow: 2px 2px 0 var(--pitch-deep);
+}
+.prompt strong { color: var(--gold); font-weight: 400; }
+.prompt .good { color: var(--gold); }
+.prompt .bad { color: #ffb3b3; }
+
+/* Cards */
+.table { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 3vw, 28px); align-items: start; }
+.card {
+  position: relative;
+  min-width: 0;
+  background: var(--card);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  outline: 2px solid var(--red);
+  outline-offset: -9px;
+  box-shadow: 6px 6px 0 var(--shadow);
+  padding: clamp(22px, 4vw, 30px) clamp(10px, 2.5vw, 22px) clamp(14px, 3vw, 22px);
+  display: grid; justify-items: center; gap: 8px;
+  text-align: center;
+}
+.card.deal { animation: deal .38s steps(6) both; }
+@keyframes deal { from { transform: translateX(40px) rotate(4deg); opacity: .2; } to { transform: none; opacity: 1; } }
+.corner {
+  position: absolute; display: grid; justify-items: center; gap: 2px;
+  font-family: var(--f-display); font-size: 10px; color: var(--red); line-height: 1;
+}
+.corner.tl { top: 14px; left: 14px; }
+.corner.br { bottom: 14px; right: 14px; transform: rotate(180deg); }
+.corner i { width: 7px; height: 7px; background: var(--red); display: block;
+  clip-path: polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%); }
+.portrait {
+  width: 100%; max-width: 192px; aspect-ratio: 1; height: auto;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  border: 3px solid var(--ink);
+  background: var(--pitch);
+}
+.name {
+  margin: 4px 0 0;
+  font-family: var(--f-display);
+  font-size: clamp(9px, 2vw, 13px);
+  line-height: 1.5;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.meta { margin: 0; font-size: clamp(17px, 3vw, 22px); color: var(--muted); }
+.chip {
+  font-family: var(--f-display); font-size: 7px; letter-spacing: .1em;
+  background: var(--navy); color: var(--chalk); padding: 4px 6px;
+}
+.caps { display: grid; justify-items: center; gap: 4px; margin-top: 4px; }
+.num {
+  font-family: var(--f-display);
+  font-size: clamp(30px, 8vw, 52px);
+  line-height: 1;
+  color: var(--red);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 3px 3px 0 rgba(23, 32, 61, .18);
+  min-width: 3ch;
+}
+.num.hidden { color: var(--navy); }
+.lbl { font-family: var(--f-display); font-size: 9px; letter-spacing: .2em; color: var(--muted); }
+.stamp {
+  position: absolute; top: 38%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-family: var(--f-display); font-size: clamp(14px, 3.4vw, 22px);
+  padding: 10px 12px; border: 4px solid currentColor; background: var(--card);
+  pointer-events: none;
+}
+.stamp.ok { color: #1f7a2e; }
+.stamp.no { color: var(--red); }
+.tag {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  font-family: var(--f-display); font-size: 8px; letter-spacing: .12em; white-space: nowrap;
+  background: var(--gold); color: var(--ink); border: 2px solid var(--ink); padding: 4px 6px;
+}
+
+/* Buttons */
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 3vw, 28px); }
+.btn {
+  font-family: var(--f-display);
+  font-size: clamp(13px, 3vw, 20px);
+  letter-spacing: .06em;
+  color: var(--chalk);
+  border: 3px solid var(--ink);
+  padding: 18px 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--ink);
+  transform: translateY(0);
+  transition: transform .05s, box-shadow .05s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn:active, .btn.pressed { transform: translateY(5px); box-shadow: 0 1px 0 var(--ink); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn:focus-visible, .mute:focus-visible, .go:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.hi { background: var(--red); }
+.lo { background: var(--navy); }
+.arrow { width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; }
+.hi .arrow { border-bottom: 12px solid var(--chalk); }
+.lo .arrow { border-top: 12px solid var(--chalk); }
+.keys { margin: -4px 0 0; text-align: center; color: rgba(246, 243, 230, .78); font-size: 19px; }
+.keys kbd { font-family: var(--f-display); font-size: 9px; border: 2px solid currentColor; padding: 2px 5px; }
+
+/* Lower panels */
+.lower { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; }
+.panel {
+  background: rgba(23, 32, 61, .88);
+  border: 3px solid var(--chalk);
+  box-shadow: 4px 4px 0 var(--shadow);
+  padding: 14px 16px 16px;
+  min-width: 0;
+}
+.panel h2 { margin: 0 0 12px; font-family: var(--f-display); font-size: 11px; letter-spacing: .1em; color: var(--gold); font-weight: 400; }
+.panel p { margin: 0 0 8px; }
+.scores { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.scores td { padding: 3px 0; font-size: 22px; }
+.scores td:first-child { width: 2.2em; color: var(--gold); }
+.scores td:last-child { text-align: right; font-family: var(--f-display); font-size: 12px; }
+.scores tr.me td { color: var(--gold); }
+.scores td.empty { color: rgba(246, 243, 230, .7); text-align: left; font-family: var(--f-body); font-size: 20px; width: auto; }
+.small { font-size: 18px; color: rgba(246, 243, 230, .78); }
+.asof { margin: 0; text-align: center; font-size: 19px; color: rgba(246, 243, 230, .85); }
+.asof a { color: inherit; }
+
+/* Overlay */
+.over {
+  position: fixed; inset: 0; z-index: 10;
+  background: rgba(13, 30, 15, .72);
+  display: grid; place-items: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.over[hidden] { display: none; }
+.over .panel { width: min(440px, 100%); max-height: 100%; overflow: auto; display: grid; gap: 12px; text-align: center; }
+.big { font-family: var(--f-display); font-size: clamp(22px, 6vw, 34px); color: var(--chalk); text-shadow: 3px 3px 0 var(--red); margin: 6px 0 0; }
+.final { font-family: var(--f-display); font-size: 12px; color: var(--gold); line-height: 1.6; margin: 0; }
+.entry { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.entry input {
+  width: 6.2em; text-align: center; text-transform: uppercase;
+  font-family: var(--f-display); font-size: 18px; letter-spacing: .25em;
+  background: var(--ink); color: var(--gold); border: 3px solid var(--gold); padding: 8px 4px;
+}
+.go {
+  font-family: var(--f-display); font-size: 12px; letter-spacing: .06em;
+  background: var(--gold); color: var(--ink); border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink); padding: 12px 14px; cursor: pointer;
+}
+.over .scores { text-align: left; }
+
+@media (max-width: 640px) {
+  .lower { grid-template-columns: minmax(0, 1fr); }
+  .board { justify-content: center; text-align: center; }
+  .stats { justify-content: center; }
+  .corner { font-size: 8px; }
+  .corner.tl { top: 11px; left: 11px; }
+  .corner.br { bottom: 11px; right: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card.deal { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="board">
+    <h1>Play Your <em>Caps</em> Right</h1>
+    <div class="stats">
+      <div class="stat"><b>STREAK</b><span id="sStreak">0</span></div>
+      <div class="stat"><b>BEST</b><span id="sBest">0</span></div>
+      <div class="stat"><b>LEFT</b><span id="sLeft">0</span></div>
+      <button class="mute" id="music" type="button" aria-pressed="false">MUSIC ON</button>
+      <button class="mute" id="mute" type="button" aria-pressed="false">SFX ON</button>
+    </div>
+  </header>
+
+  <p class="prompt" id="prompt" aria-live="polite"></p>
+
+  <div class="table">
+    <article class="card" id="cardCur"></article>
+    <article class="card" id="cardNext"></article>
+  </div>
+
+  <div class="controls">
+    <button class="btn hi" id="btnHi" type="button"><span class="arrow" aria-hidden="true"></span>HIGHER</button>
+    <button class="btn lo" id="btnLo" type="button"><span class="arrow" aria-hidden="true"></span>LOWER</button>
+  </div>
+  <p class="keys">Keys: <kbd>↑</kbd> or <kbd>H</kbd> higher · <kbd>↓</kbd> or <kbd>L</kbd> lower</p>
+
+  <section class="lower">
+    <div class="panel">
+      <h2>HIGH SCORES</h2>
+      <table class="scores" id="scores"></table>
+    </div>
+    <div class="panel">
+      <h2>HOW TO PLAY</h2>
+      <p>The left card shows a player and their England caps. Guess whether the player on the right won more or fewer.</p>
+      <p>Get it right and he becomes your new card. Level on caps counts as a pass. One wrong call and you're out.</p>
+      <p class="small">Every player appears once per game. Clear the whole deck to complete the squad. Caps for players still in the England setup are refreshed from Wikipedia twice a week.</p>
+    </div>
+  </section>
+  <p class="asof" id="asof"></p>
+</div>
+
+<div class="over" id="over" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="overTitle">
+    <p class="big" id="overTitle">OUT!</p>
+    <p class="final" id="overLine"></p>
+    <p id="overAnswer"></p>
+    <form class="entry" id="entry" hidden>
+      <label for="initials" class="small" style="width:100%">New high score. Enter your initials:</label>
+      <input id="initials" name="initials" maxlength="3" autocomplete="off" spellcheck="false" required>
+      <button class="go" type="submit">SAVE</button>
+    </form>
+    <table class="scores" id="overScores"></table>
+    <div><button class="go" id="again" type="button">PLAY AGAIN</button></div>
+  </div>
+</div>
+
+<script>
+// ---------- Player data ----------
+// Loaded from data/players.json, which a scheduled GitHub Action refreshes from Wikipedia.
+const POS = { GK: "Goalkeeper", DF: "Defender", MF: "Midfielder", FW: "Forward" };
+let PLAYERS = [];
+
+// ---------- Pixel portraits ----------
+const SKIN = [["#f3cfae", "#d9a882"], ["#e7b48c", "#c58b64"], ["#c48a5c", "#9f6a40"], ["#8b5838", "#6b4128"], ["#5c3923", "#432817"]];
+const HAIR = { b: ["#f0cf68", "#c49d3e"], l: ["#b07c45", "#8a5c2e"], m: ["#6b4423", "#4b2f17"], d: ["#3a2615", "#25170b"], k: ["#1d1715", "#0c0908"], g: ["#d0702f", "#a1501c"], s: ["#b9b9b9", "#8d8d8d"] };
+const NAVY = "#1b2a5a", RED = "#c8102e", WHITE = "#f4f4f0", WSHADE = "#d4d4cc";
+
+function drawPlayer(canvas, p) {
+  const ctx = canvas.getContext("2d");
+  const r = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
+  if (!p.look) return drawUnknown(r);
+  const [s0, s1] = SKIN[p.skin] || SKIN[1];
+  const [h0, h1] = HAIR[p.hair] || HAIR.m;
+  // mown pitch backdrop
+  for (let y = 0; y < 32; y += 4) r(0, y, 32, 4, (y / 4) % 2 ? "#368a3b" : "#3f9a43");
+  r(0, 30, 32, 2, "#2a6f2e");
+
+  // neck
+  r(13, 20, 6, 5, s0); r(13, 22, 6, 1, s1);
+
+  // shirt
+  let base = WHITE, shade = WSHADE;
+  if (p.pos === "GK") {
+    [base, shade] = p.era <= 1980 ? ["#2f8a3a", "#226b2b"] : p.era === 1990 ? ["#7b8088", "#5e636a"] : p.era === 2000 ? ["#e2bd2a", "#b59820"] : ["#e0702a", "#b45720"];
+  } else if (p.era === 1960) { base = RED; shade = "#9c0c24"; }
+  r(8, 24, 16, 1, base); r(6, 25, 20, 1, base); r(4, 26, 24, 6, base);
+  r(4, 26, 2, 6, shade); r(26, 26, 2, 6, shade); r(15, 29, 2, 3, shade);
+  const outfield = p.pos !== "GK";
+  const trim = p.era === 1960 ? WHITE : p.era === 2000 ? RED : NAVY;
+  if (p.era <= 1950) {
+    // old-school collar and laces
+    r(10, 23, 4, 2, WHITE); r(18, 23, 4, 2, WHITE); r(10, 24, 4, 1, WSHADE); r(18, 24, 4, 1, WSHADE);
+    r(15, 25, 2, 2, s0); r(15, 25, 1, 1, NAVY); r(16, 26, 1, 1, NAVY);
+  } else if (p.era === 1990 || (p.era === 1980 && !outfield)) {
+    // polo collar
+    const c = outfield ? NAVY : shade;
+    r(10, 23, 4, 2, c); r(18, 23, 4, 2, c); r(15, 25, 2, 3, c);
+  } else if (p.era === 1980 || p.era === 2020) {
+    // v-neck
+    r(14, 25, 4, 1, s0); r(15, 26, 2, 1, s0);
+    r(13, 24, 1, 2, trim); r(18, 24, 1, 2, trim); r(14, 26, 1, 1, trim); r(17, 26, 1, 1, trim); r(15, 27, 2, 1, trim);
+  } else {
+    // crew neck
+    r(12, 24, 8, 1, outfield ? trim : shade);
+  }
+  if (p.era === 1970 && outfield) { // Admiral shoulder stripes
+    r(6, 25, 4, 1, NAVY); r(4, 26, 4, 1, RED); r(22, 25, 4, 1, NAVY); r(24, 26, 4, 1, RED);
+  }
+  if (p.era === 1980 && outfield) { r(4, 27, 3, 1, RED); r(25, 27, 3, 1, RED); }
+  // crest
+  if (p.era >= 1960) {
+    const crestBg = p.era === 1960 && outfield ? WHITE : NAVY;
+    r(19, 27, 3, 3, crestBg); r(20, 28, 1, 1, crestBg === WHITE ? NAVY : RED);
+  }
+
+  // long hair at the back sits behind the head
+  if (p.style === "long") { r(9, 9, 2, 12, h0); r(21, 9, 2, 12, h0); r(9, 18, 2, 3, h1); r(21, 18, 2, 3, h1); }
+  if (p.style === "mullet") { r(8, 11, 3, 13, h0); r(21, 11, 3, 13, h0); r(8, 21, 3, 3, h1); r(21, 21, 3, 3, h1); }
+  if (p.style === "afro") { r(7, 3, 18, 13, h0); r(6, 5, 20, 9, h0); r(8, 2, 16, 1, h0); }
+
+  // ears
+  r(9, 12, 2, 4, s0); r(21, 12, 2, 4, s0); r(9, 13, 1, 2, s1); r(22, 13, 1, 2, s1);
+  // head
+  r(12, 7, 8, 1, s0); r(11, 8, 10, 12, s0); r(10, 9, 1, 10, s0); r(21, 9, 1, 10, s0); r(12, 20, 8, 1, s1);
+  r(11, 19, 1, 1, s1); r(20, 19, 1, 1, s1); r(21, 14, 1, 5, s1);
+  // brows, eyes, nose, mouth
+  r(12, 11, 3, 1, h1); r(17, 11, 3, 1, h1);
+  r(13, 13, 2, 1, "#ffffff"); r(14, 13, 1, 1, "#16161a");
+  r(17, 13, 2, 1, "#ffffff"); r(18, 13, 1, 1, "#16161a");
+  r(16, 14, 1, 2, s1); r(15, 16, 2, 1, s1);
+  if (p.extra === "gap") { r(13, 18, 6, 1, "#5a1f1a"); r(13, 17, 1, 1, "#ffffff"); r(18, 17, 1, 1, "#ffffff"); }
+  else r(14, 18, 4, 1, "#8a3b2f");
+
+  // hair on top
+  const top = () => { r(12, 5, 8, 1, h0); r(11, 6, 10, 1, h0); r(10, 7, 12, 2, h0); r(10, 9, 2, 4, h0); r(20, 9, 2, 4, h0); r(13, 5, 3, 1, lighten(h0)); };
+  const sides = () => { r(10, 9, 1, 5, h0); r(21, 9, 1, 5, h0); };
+  switch (p.style) {
+    case "short": top(); break;
+    case "long": top(); r(10, 9, 2, 5, h0); r(20, 9, 2, 5, h0); break;
+    case "mullet": top(); break;
+    case "buzz": r(12, 6, 8, 1, h0); r(11, 7, 10, 1, h0); r(10, 8, 2, 3, h0); r(20, 8, 2, 3, h0); r(11, 8, 1, 1, h0); r(20, 8, 1, 1, h0); break;
+    case "bald": sides(); r(13, 8, 2, 1, lighten(s0)); break;
+    case "receding": r(10, 8, 2, 6, h0); r(20, 8, 2, 6, h0); r(12, 7, 1, 1, h0); r(19, 7, 1, 1, h0); r(14, 8, 2, 1, lighten(s0)); break;
+    case "combover": r(10, 8, 2, 6, h0); r(20, 8, 2, 6, h0); r(11, 7, 9, 1, h0); r(12, 6, 5, 1, h0); break;
+    case "curly":
+      r(10, 4, 12, 5, h0); r(9, 5, 14, 4, h0); r(9, 9, 2, 5, h0); r(21, 9, 2, 5, h0);
+      for (let y = 4; y < 14; y++) for (let x = 9; x < 23; x++) if ((x + y) % 3 === 0 && (y < 9 || x < 11 || x > 20)) r(x, y, 1, 1, h1);
+      break;
+    case "afro":
+      for (let y = 2; y < 16; y++) for (let x = 6; x < 26; x++) if ((x * 3 + y) % 5 === 0) r(x, y, 1, 1, h1);
+      r(11, 8, 10, 1, h0); break;
+    case "quiff": top(); r(12, 3, 7, 2, h0); r(13, 3, 3, 1, lighten(h0)); break;
+    case "mohawk": r(14, 2, 4, 7, h0); r(15, 2, 1, 4, lighten(h0)); r(10, 8, 2, 3, h1); r(20, 8, 2, 3, h1); break;
+    case "ponytail": top(); r(22, 9, 2, 3, h1); r(23, 12, 2, 7, h0); break;
+    case "curtains": top(); r(10, 9, 4, 2, h0); r(18, 9, 4, 2, h0); r(15, 7, 2, 2, s0); break;
+    case "bowl": r(11, 5, 10, 1, h0); r(10, 6, 12, 4, h0); r(10, 10, 2, 4, h0); r(20, 10, 2, 4, h0); r(11, 10, 10, 1, h0); r(13, 6, 3, 1, lighten(h0)); break;
+    default: top();
+  }
+  // facial hair
+  if (p.facial === "moustache") r(13, 17, 6, 1, h0);
+  if (p.facial === "beard" || p.facial === "stubble") {
+    const c = p.facial === "beard" ? h0 : mix(s1, h0);
+    r(11, 16, 1, 4, c); r(20, 16, 1, 4, c); r(12, 19, 8, 2, c); r(13, 17, 6, 1, c); r(12, 18, 2, 1, c); r(18, 18, 2, 1, c);
+    r(14, 18, 4, 1, "#8a3b2f");
+  }
+  if (p.extra === "bandage") {
+    r(10, 8, 12, 2, "#fbfbf6"); r(10, 9, 12, 1, "#dcdcd2"); r(14, 8, 1, 1, RED); r(15, 9, 2, 1, RED); r(17, 8, 1, 1, "#e0485d");
+  }
+}
+// Newly capped players get a plain silhouette until someone gives them a look in data/players.json.
+function drawUnknown(r) {
+  for (let y = 0; y < 32; y += 4) r(0, y, 32, 4, (y / 4) % 2 ? "#368a3b" : "#3f9a43");
+  const c = "#24402a";
+  r(8, 24, 16, 1, c); r(6, 25, 20, 1, c); r(4, 26, 24, 6, c); r(13, 20, 6, 5, c);
+  r(12, 6, 8, 1, c); r(11, 7, 10, 13, c); r(10, 9, 1, 10, c); r(21, 9, 1, 10, c); r(12, 20, 8, 1, c); r(9, 12, 1, 4, c); r(22, 12, 1, 4, c);
+  r(15, 10, 3, 1, "#f6f3e6"); r(17, 11, 1, 2, "#f6f3e6"); r(16, 13, 1, 2, "#f6f3e6"); r(16, 16, 1, 1, "#f6f3e6");
+}
+function hex(c) { const n = parseInt(c.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function rgb(a) { return "#" + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join(""); }
+function lighten(c) { return rgb(hex(c).map(v => v + (255 - v) * 0.28)); }
+function mix(a, b) { const x = hex(a), y = hex(b); return rgb(x.map((v, i) => (v + y[i]) / 2)); }
+
+// ---------- Storage ----------
+const KEY = "pycr-scores-v1", MUTE = "pycr-mute";
+function loadScores() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+function saveScores(list) { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} }
+let muted = false;
+try { muted = localStorage.getItem(MUTE) === "1"; } catch {}
+
+// ---------- Sound ----------
+let actx = null;
+function beep(notes) {
+  if (muted) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    let t = actx.currentTime;
+    for (const [f, d] of notes) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = "square"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d); t += d * 0.9;
+    }
+  } catch {}
+}
+
+// ---------- Music: an original 16-bar chiptune anthem ----------
+// Bars 1-8 are a TV-sport fanfare, bars 9-16 a terrace sing-along. Notes are name:eighths, R is a rest.
+const MELODY = `
+G4:1 C5:1 E5:2 G5:3 E5:1 | F5:2 D5:2 B4:2 G4:2 | A4:1 C5:1 F5:2 A5:3 F5:1 | G5:3 R:1 G5:1 A5:1 B5:2 |
+C6:2 G5:2 E5:2 G5:1 E5:1 | D5:2 E5:2 C5:2 A4:2 | F5:2 A5:2 G5:2 D5:2 | C5:6 R:2 |
+E5:1 E5:1 E5:1 D5:1 C5:2 D5:2 | E5:2 G5:2 G5:4 | F5:1 F5:1 F5:1 E5:1 D5:2 E5:2 | F5:2 A5:2 A5:4 |
+G5:1 A5:1 G5:1 F5:1 E5:2 C5:2 | D5:2 E5:2 F5:2 A5:2 | G5:3 F5:1 E5:2 D5:2 | C5:4 G4:2 C5:2`;
+const CHORDS = "C G F G C Am F C C Em Dm F Am Dm G C".split(" ");
+const CHORD_NOTES = { C: [48, 52, 55], G: [43, 47, 50], F: [41, 45, 48], Am: [45, 48, 52], Dm: [38, 41, 45], Em: [40, 43, 47] };
+const STEPS = 128;
+const midi = n => { const m = /^([A-G])(#?)(\d)$/.exec(n); return 12 * (+m[3] + 1) + "C D EF G A B".indexOf(m[1]) + (m[2] ? 1 : 0); };
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+const LEAD = new Array(STEPS).fill(null);
+(() => { let s = 0; for (const tok of MELODY.replace(/\|/g, " ").trim().split(/\s+/)) { const [n, len] = tok.split(":"); if (n !== "R") LEAD[s] = [midi(n), +len]; s += +len; } })();
+
+let musicOn = true, musicTimer = null, musicStep = 0, nextNote = 0, musicBus = null, noiseBuf = null;
+try { musicOn = localStorage.getItem("pycr-music") !== "0"; } catch {}
+function audio() {
+  actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === "suspended") actx.resume();
+  return actx;
+}
+function voice(type, freq, t, dur, vol) {
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(vol, t + dur * 0.7); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(musicBus); o.start(t); o.stop(t + dur + 0.02);
+  return o;
+}
+function noise(t, dur, vol, hp) {
+  const src = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+  src.buffer = noiseBuf; f.type = "highpass"; f.frequency.value = hp;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f).connect(g).connect(musicBus); src.start(t); src.stop(t + dur);
+}
+function playStep(s, t, eighth) {
+  const bar = Math.floor(s / 8), beat = s % 8, chord = CHORD_NOTES[CHORDS[bar]];
+  const lead = LEAD[s];
+  if (lead) voice("square", hz(lead[0]), t, lead[1] * eighth * 0.92, 0.05);
+  voice("triangle", hz(chord[0] - 12 + (beat % 2 ? 12 : 0)), t, eighth * 0.85, 0.16);
+  if (beat % 2) chord.forEach(n => voice("square", hz(n + 12), t, eighth * 0.4, 0.012));
+  if (beat === 0 || beat === 4) { const k = voice("sine", 140, t, 0.12, 0.3); k.frequency.exponentialRampToValueAtTime(40, t + 0.12); }
+  if (beat === 2 || beat === 6) noise(t, 0.14, 0.12, 1200);
+  noise(t, 0.03, 0.03, 7000);
+}
+function tickMusic() {
+  // the band speeds up a little as the streak builds
+  const eighth = 60 / (132 + Math.min(streak, 24) * 2) / 2;
+  while (nextNote < actx.currentTime + 0.12) {
+    playStep(musicStep, nextNote, eighth);
+    nextNote += eighth;
+    musicStep = (musicStep + 1) % STEPS;
+  }
+}
+function startMusic() {
+  if (!musicOn || musicTimer || document.hidden) return;
+  try {
+    audio();
+    if (!musicBus) {
+      musicBus = actx.createGain(); musicBus.gain.value = 0.7; musicBus.connect(actx.destination);
+      noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+      const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    nextNote = actx.currentTime + 0.06;
+    musicTimer = setInterval(tickMusic, 25);
+  } catch {}
+}
+function stopMusic() { clearInterval(musicTimer); musicTimer = null; }
+
+// ---------- Game ----------
+const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PRAISE = ["Back of the net!", "What a call!", "Spot on.", "Textbook.", "Top bins!", "Like a seasoned pundit.", "Straight from the training ground."];
+let deck = [], idx = 0, streak = 0, busy = false, over = false, lastSavedAt = null;
+
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const best = () => Math.max(0, ...loadScores().map(s => s.score));
+
+function cardHTML(p, showCaps) {
+  const caps = showCaps ? p.caps : "?";
+  return `
+    <div class="corner tl" aria-hidden="true"><span>${caps}</span><i></i></div>
+    <canvas class="portrait" width="32" height="32" role="img" aria-label="Pixel portrait of ${p.name}"></canvas>
+    <h2 class="name">${p.name}</h2>
+    <p class="meta">${POS[p.pos]} · ${p.years}</p>
+    ${p.active ? '<span class="chip">STILL PLAYING</span>' : ""}
+    <div class="caps"><span class="num${showCaps ? "" : " hidden"}">${caps}</span><span class="lbl">CAPS</span></div>
+    <div class="corner br" aria-hidden="true"><span>${caps}</span><i></i></div>`;
+}
+function renderCard(el, p, showCaps, tag, deal) {
+  el.innerHTML = cardHTML(p, showCaps) + (tag ? `<span class="tag">${tag}</span>` : "");
+  drawPlayer(el.querySelector("canvas"), p);
+  el.classList.remove("deal");
+  if (deal) { void el.offsetWidth; el.classList.add("deal"); }
+}
+function updateStats() {
+  $("sStreak").textContent = streak;
+  $("sBest").textContent = Math.max(best(), streak);
+  $("sLeft").textContent = Math.max(0, deck.length - idx - 1);
+}
+function setPrompt() {
+  const cur = deck[idx], nxt = deck[idx + 1];
+  $("prompt").innerHTML = `Has <strong>${nxt.name}</strong> got higher or lower than <strong>${cur.caps}</strong> caps?`;
+}
+function show(deal) {
+  renderCard($("cardCur"), deck[idx], true, "CURRENT", false);
+  renderCard($("cardNext"), deck[idx + 1], false, "NEXT UP", deal);
+  setPrompt(); updateStats();
+  $("btnHi").disabled = $("btnLo").disabled = false;
+}
+function newGame() {
+  deck = shuffle(PLAYERS.slice()); idx = 0; streak = 0; busy = false; over = false; lastSavedAt = null;
+  $("over").hidden = true;
+  show(true);
+  renderScores($("scores"));
+}
+
+function countUp(el, target, done) {
+  const corners = el.closest(".card").querySelectorAll(".corner span");
+  if (reduceMotion) { el.textContent = target; corners.forEach(c => c.textContent = target); el.classList.remove("hidden"); return done(); }
+  const start = performance.now(), dur = 300 + Math.min(target, 125) * 5;
+  el.classList.remove("hidden");
+  let lastBlip = 0;
+  (function step(now) {
+    const t = Math.min(1, (now - start) / dur), v = Math.round(target * (1 - Math.pow(1 - t, 3)));
+    el.textContent = v;
+    if (now - lastBlip > 70 && t < 1) { beep([[300 + v * 4, 0.025]]); lastBlip = now; }
+    if (t < 1) requestAnimationFrame(step); else { corners.forEach(c => c.textContent = target); done(); }
+  })(start);
+}
+
+function guess(dir) {
+  if (busy || over) return;
+  busy = true;
+  $("btnHi").disabled = $("btnLo").disabled = true;
+  const btn = dir === "hi" ? $("btnHi") : $("btnLo");
+  btn.classList.add("pressed"); setTimeout(() => btn.classList.remove("pressed"), 120);
+  const cur = deck[idx], nxt = deck[idx + 1];
+  const nextCard = $("cardNext");
+  countUp(nextCard.querySelector(".num"), nxt.caps, () => {
+    const level = nxt.caps === cur.caps;
+    const ok = level || (dir === "hi" ? nxt.caps > cur.caps : nxt.caps < cur.caps);
+    const stamp = document.createElement("span");
+    stamp.className = "stamp " + (ok ? "ok" : "no");
+    stamp.textContent = level ? "LEVEL!" : ok ? "RIGHT!" : "WRONG!";
+    nextCard.appendChild(stamp);
+    if (ok) {
+      streak++;
+      beep([[523, 0.08], [659, 0.08], [784, 0.14]]);
+      $("prompt").innerHTML = level
+        ? `<span class="good">Level on ${nxt.caps} caps. You're through.</span>`
+        : `<span class="good">${PRAISE[Math.floor(Math.random() * PRAISE.length)]}</span> ${nxt.name}: ${nxt.caps} caps.`;
+      updateStats();
+      setTimeout(() => {
+        idx++;
+        busy = false;
+        if (idx + 1 >= deck.length) return endGame(true);
+        show(true);
+      }, reduceMotion ? 700 : 1100);
+    } else {
+      beep([[330, 0.12], [247, 0.12], [165, 0.3]]);
+      $("prompt").innerHTML = `<span class="bad">${nxt.name} has ${nxt.caps} caps.</span>`;
+      setTimeout(() => endGame(false, cur, nxt), reduceMotion ? 600 : 1000);
+    }
+  });
+}
+
+function qualifies(score) {
+  if (score <= 0) return false;
+  const list = loadScores();
+  return list.length < 10 || score > list[list.length - 1].score;
+}
+function renderScores(table, highlight) {
+  const list = loadScores();
+  if (!list.length) { table.innerHTML = `<tr><td class="empty" colspan="3">No scores yet. Yours could be the first.</td></tr>`; return; }
+  table.innerHTML = list.map((s, i) =>
+    `<tr class="${s.at === highlight ? "me" : ""}"><td>${i + 1}.</td><td>${escapeHTML(s.name)}</td><td>${s.score}</td></tr>`).join("");
+}
+function escapeHTML(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+function endGame(won, cur, nxt) {
+  over = true; busy = false;
+  $("overTitle").textContent = won ? "FULL SQUAD!" : "OUT!";
+  $("overLine").textContent = won ? `You went through all ${deck.length} players. Streak: ${streak}` : `Streak: ${streak}`;
+  $("overAnswer").textContent = won
+    ? "Every England player in the deck, called correctly."
+    : `${nxt.name} has ${nxt.caps} caps. ${cur.name} has ${cur.caps}.`;
+  const q = qualifies(streak);
+  $("entry").hidden = !q;
+  $("initials").value = "";
+  renderScores($("overScores"));
+  $("over").hidden = false;
+  (q ? $("initials") : $("again")).focus();
+}
+
+$("entry").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = ($("initials").value.toUpperCase().replace(/[^A-Z0-9]/g, "") || "???").slice(0, 3);
+  const at = Date.now();
+  const list = loadScores();
+  list.push({ name, score: streak, at });
+  list.sort((a, b) => b.score - a.score || a.at - b.at);
+  saveScores(list.slice(0, 10));
+  lastSavedAt = at;
+  $("entry").hidden = true;
+  renderScores($("overScores"), at);
+  renderScores($("scores"), at);
+  updateStats();
+  $("again").focus();
+});
+$("again").addEventListener("click", newGame);
+$("btnHi").addEventListener("click", () => guess("hi"));
+$("btnLo").addEventListener("click", () => guess("lo"));
+$("mute").addEventListener("click", () => {
+  muted = !muted;
+  try { localStorage.setItem(MUTE, muted ? "1" : "0"); } catch {}
+  syncMute();
+});
+function syncMute() {
+  $("mute").setAttribute("aria-pressed", String(muted)); $("mute").textContent = muted ? "SFX OFF" : "SFX ON";
+  $("music").setAttribute("aria-pressed", String(!musicOn)); $("music").textContent = musicOn ? "MUSIC ON" : "MUSIC OFF";
+}
+$("music").addEventListener("click", () => {
+  musicOn = !musicOn;
+  try { localStorage.setItem("pycr-music", musicOn ? "1" : "0"); } catch {}
+  musicOn ? startMusic() : stopMusic();
+  syncMute();
+});
+// browsers only allow sound after the first tap or key press
+["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, startMusic, { once: true }));
+document.addEventListener("visibilitychange", () => document.hidden ? stopMusic() : startMusic());
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  const k = e.key.toLowerCase();
+  if (!over && (k === "arrowup" || k === "h")) { e.preventDefault(); guess("hi"); }
+  else if (!over && (k === "arrowdown" || k === "l")) { e.preventDefault(); guess("lo"); }
+});
+
+syncMute();
+fetch("data/players.json", { cache: "no-cache" })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    PLAYERS = data.players.map(p => ({ ...p, ...(p.look || {}) }));
+    if (data.updated) {
+      const d = new Date(data.updated + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+      $("asof").innerHTML = `Data accurate as of ${d}. Caps from <a href="https://en.wikipedia.org/" rel="noopener">Wikipedia</a>.`;
+    }
+    newGame();
+  })
+  .catch(() => {
+    $("prompt").textContent = "Couldn't load the player list. Refresh to try again.";
+    $("btnHi").disabled = $("btnLo").disabled = true;
+  });
+</script>
+
+</body>
+</html>
