@@ -1,6 +1,6 @@
 {
-  "updated": null,
-  "source": "Starting figures entered by hand. The weekly update replaces them with Wikipedia's.",
+  "updated": "2026-10-15",
+  "source": "English Wikipedia player articles (CC BY-SA 4.0)",
   "players": [
     {"name":"Peter Shilton","wiki":"Peter Shilton","caps":125,"years":"1970–1990","pos":"GK","era":1980,"active":false,"look":{"skin":1,"hair":"d","style":"curly"}},
     {"name":"Wayne Rooney","wiki":"Wayne Rooney","caps":120,"years":"2003–2018","pos":"FW","era":2010,"active":false,"look":{"skin":1,"hair":"m","style":"buzz"}},
@@ -119,10 +119,28 @@
     {"name":"Kevin Phillips","wiki":"Kevin Phillips (footballer, born 1973)","caps":8,"years":"1999–2002","pos":"FW","era":2000,"active":false,"look":{"skin":1,"hair":"m","style":"short"}},
     {"name":"Peter Bonetti","wiki":"Peter Bonetti","caps":7,"years":"1966–1970","pos":"GK","era":1960,"active":false,"look":{"skin":1,"hair":"m","style":"short"}},
     {"name":"Laurie Cunningham","wiki":"Laurie Cunningham","caps":6,"years":"1979–1980","pos":"FW","era":1970,"active":false,"look":{"skin":3,"hair":"k","style":"afro"}},
-    {"name":"Harry Kane","wiki":"Harry Kane","caps":121,"years":"2015–","pos":"FW","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short","facial":"stubble"}},
-    {"name":"John Stones","wiki":"John Stones","caps":94,"years":"2014–","pos":"DF","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short","facial":"beard"}},
-    {"name":"Jordan Pickford","wiki":"Jordan Pickford","caps":91,"years":"2017–","pos":"GK","era":2020,"active":true,"look":{"skin":0,"hair":"m","style":"short","facial":"beard"}},
-    {"name":"Declan Rice","wiki":"Declan Rice","caps":80,"years":"2019–","pos":"MF","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short"}},
-    {"name":"Bukayo Saka","wiki":"Bukayo Saka","caps":50,"years":"2020–","pos":"FW","era":2020,"active":true,"look":{"skin":3,"hair":"k","style":"short"}}
+    {"name":"Harry Kane","wiki":"Harry Kane","caps":125,"years":"2015–","pos":"FW","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short","facial":"stubble"},"asOf":"20:30, 6 October 2026 (UTC)"},
+    {"name":"John Stones","wiki":"John Stones","caps":94,"years":"2014–","pos":"DF","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short","facial":"beard"},"asOf":"15:20, 16 July 2026 (UTC)"},
+    {"name":"Jordan Pickford","wiki":"Jordan Pickford","caps":93,"years":"2017–","pos":"GK","era":2020,"active":true,"look":{"skin":0,"hair":"m","style":"short","facial":"beard"},"asOf":"22:50, 6 October 2026 (UTC)"},
+    {"name":"Declan Rice","wiki":"Declan Rice","caps":80,"years":"2019–","pos":"MF","era":2020,"active":true,"look":{"skin":1,"hair":"m","style":"short"},"asOf":"23:10, 18 July 2026 (UTC)"},
+    {"name":"Bukayo Saka","wiki":"Bukayo Saka","caps":59,"years":"2020–","pos":"FW","era":2020,"active":true,"look":{"skin":3,"hair":"k","style":"short"},"asOf":"18:00, 3 October 2026 (UTC)"},
+    {"name":"James Trafford","wiki":"James Trafford","caps":4,"years":"2026–","pos":"GK","era":2020,"active":true,"look":null,"asOf":"21:10, 29 September 2026 (UTC)"},
+    {"name":"Trent Alexander-Arnold","wiki":"Trent Alexander-Arnold","caps":36,"years":"2018–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"22:35, 6 October 2026 (UTC)"},
+    {"name":"Lewis Hall","wiki":"Lewis Hall (footballer)","caps":6,"years":"2024–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"},
+    {"name":"Marc Guéhi","wiki":"Marc Guéhi","caps":41,"years":"2022–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"},
+    {"name":"Trevoh Chalobah","wiki":"Trevoh Chalobah","caps":3,"years":"2025–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"21:10, 29 September 2026 (UTC)"},
+    {"name":"Jarrad Branthwaite","wiki":"Jarrad Branthwaite","caps":3,"years":"2024–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"22:40, 6 October 2026 (UTC)"},
+    {"name":"Jarell Quansah","wiki":"Jarell Quansah","caps":9,"years":"2025–","pos":"DF","era":2020,"active":true,"look":null},
+    {"name":"Rico Lewis","wiki":"Rico Lewis","caps":5,"years":"2023–","pos":"DF","era":2020,"active":true,"look":null,"asOf":"13:17, 19 November 2025 (UTC)"},
+    {"name":"Elliot Anderson","wiki":"Elliot Anderson","caps":21,"years":"2025–","pos":"MF","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"},
+    {"name":"Jude Bellingham","wiki":"Jude Bellingham","caps":60,"years":"2020–","pos":"MF","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"},
+    {"name":"Myles Lewis-Skelly","wiki":"Myles Lewis-Skelly","caps":10,"years":"2025–","pos":"MF","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"},
+    {"name":"James Garner","wiki":"James Garner (footballer, born 2001)","caps":5,"years":"2026–","pos":"MF","era":2020,"active":true,"look":null,"asOf":"22:03, 6 October 2026 (UTC)"},
+    {"name":"Morgan Gibbs-White","wiki":"Morgan Gibbs-White","caps":10,"years":"2024–","pos":"MF","era":2020,"active":true,"look":null},
+    {"name":"Anthony Gordon","wiki":"Anthony Gordon (footballer)","caps":28,"years":"2024–","pos":"FW","era":2020,"active":true,"look":null,"asOf":"18:00, 3 October 2026 (UTC)"},
+    {"name":"Rio Ngumoha","wiki":"Rio Ngumoha","caps":3,"years":"2026–","pos":"FW","era":2020,"active":true,"look":null},
+    {"name":"Morgan Rogers","wiki":"Morgan Rogers","caps":26,"years":"2024–","pos":"FW","era":2020,"active":true,"look":null},
+    {"name":"Dominic Calvert-Lewin","wiki":"Dominic Calvert-Lewin","caps":14,"years":"2020–","pos":"FW","era":2020,"active":true,"look":null,"asOf":"16:16, 7 October 2026 (UTC)"},
+    {"name":"Eberechi Eze","wiki":"Eberechi Eze","caps":25,"years":"2023–","pos":"FW","era":2020,"active":true,"look":null,"asOf":"16:10, 7 October 2026 (UTC)"}
   ]
 }
