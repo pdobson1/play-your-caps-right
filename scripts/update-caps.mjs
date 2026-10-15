@@ -4,7 +4,7 @@
 // Usage: node scripts/update-caps.mjs [--dry-run]
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { englandCaps, currentSquad } from "./wikitext.mjs";
+import { englandCaps, currentSquad, candidateTitles } from "./wikitext.mjs";
 
 const DATA = new URL("../data/players.json", import.meta.url);
 const API = "https://en.wikipedia.org/w/api.php";
@@ -32,6 +32,28 @@ async function fetchPages(titles) {
     for (const t of batch) { const text = byTitle.get(resolve(t)); if (text) out.set(t, text); }
   }
   return out;
+}
+
+/**
+ * When a player's page title is wrong, look at the disambiguation page for his name and
+ * pick the linked article that has England senior caps, preferring the one matching our figure.
+ */
+async function resolveMisses(players, pages, changes) {
+  const misses = players.filter(p => !englandCaps(pages.get(p.wiki) || ""));
+  if (!misses.length) return;
+  const disambig = await fetchPages(misses.map(p => p.name));
+  // the plain name may itself be the right article, so try it alongside the links it lists
+  const candidates = new Map(misses.map(p => [p, [p.name, ...candidateTitles(disambig.get(p.name) || "", p.name)]]));
+  const articles = await fetchPages([...new Set([...candidates.values()].flat())].filter(t => !disambig.has(t)));
+  for (const [t, text] of disambig) articles.set(t, text);
+  for (const [p, titles] of candidates) {
+    const hits = titles.map(t => ({ t, found: englandCaps(articles.get(t) || "") })).filter(h => h.found);
+    const pick = hits.find(h => h.found.caps === p.caps) || hits[0];
+    if (!pick) continue;
+    changes.push(`${p.name}: page title ${p.wiki} → ${pick.t}`);
+    p.wiki = pick.t;
+    pages.set(pick.t, articles.get(pick.t));
+  }
 }
 
 /** Write one player per line so diffs in pull requests and commits stay readable. */
@@ -62,6 +84,7 @@ export async function update({ dryRun = false } = {}) {
 
   // 2. Caps for everyone from their own article
   const pages = await fetchPages(data.players.map(p => p.wiki));
+  await resolveMisses(data.players, pages, changes);
   for (const p of data.players) {
     const found = englandCaps(pages.get(p.wiki) || "");
     if (!found) { missing.push(p.name); continue; }

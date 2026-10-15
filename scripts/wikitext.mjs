@@ -81,6 +81,18 @@ export function englandCaps(wikitext) {
   return null;
 }
 
+/** From a disambiguation page, list linked titles that start with the player's name, e.g. "Billy Wright (footballer, born 1924)". */
+export function candidateTitles(wikitext, name) {
+  const out = new Set();
+  const re = /\[\[([^\]|#]+)(?:\|[^\]]*)?\]\]/g;
+  let m;
+  while ((m = re.exec(wikitext))) {
+    const title = m[1].trim();
+    if (title.startsWith(name) && title !== name) out.add(title);
+  }
+  return [...out];
+}
+
 /** Read the current squad table from the England national football team article. */
 export function currentSquad(wikitext) {
   return findTemplates(wikitext, "nat fs g player").map(p => {

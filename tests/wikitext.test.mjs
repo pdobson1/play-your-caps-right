@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { englandCaps, currentSquad, clean } from "../scripts/wikitext.mjs";
+import { englandCaps, currentSquad, clean, candidateTitles } from "../scripts/wikitext.mjs";
 
 const KANE = `{{Short description|English footballer (born 1993)}}
 {{Infobox football biography
@@ -60,6 +60,14 @@ test("reads the current squad table", () => {
     { wiki: "Harry Kane", name: "Harry Kane", pos: "FW", caps: 121 },
     { wiki: "Jarell Quansah", name: "Jarell Quansah", pos: "DF", caps: 3 },
   ]);
+});
+
+test("lists candidate articles from a disambiguation page", () => {
+  const page = `'''Billy Wright''' may refer to:
+* [[Billy Wright (footballer, born 1924)|Billy Wright (footballer, born 1924)]], England captain
+* [[Billy Wright (loyalist)]], Northern Irish loyalist
+* [[Bill Wright]]`;
+  assert.deepEqual(candidateTitles(page, "Billy Wright"), ["Billy Wright (footballer, born 1924)", "Billy Wright (loyalist)"]);
 });
 
 test("clean strips refs, comments and templates", () => {
