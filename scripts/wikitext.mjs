@@ -66,16 +66,18 @@ export function findTemplates(text, name) {
 export function englandCaps(wikitext) {
   const [box] = findTemplates(wikitext, "Infobox football biography");
   if (!box) return null;
+  // The infobox's field names changed in late 2026 (nationalcaps1 → national_caps1), so read either spelling.
+  const field = (...names) => names.map(n => box[n]).find(v => v !== undefined);
   for (let n = 1; n <= 20; n++) {
-    const team = box[`nationalteam${n}`];
+    const team = field(`national_team${n}`, `nationalteam${n}`);
     if (team === undefined) continue;
     if (!ENGLAND_SENIOR.test(clean(team))) continue;
-    const caps = parseInt(clean(box[`nationalcaps${n}`]), 10);
+    const caps = parseInt(clean(field(`national_caps${n}`, `nationalcaps${n}`)), 10);
     if (!Number.isFinite(caps)) return null;
     return {
       caps,
-      years: clean(box[`nationalyears${n}`]).replace(/-/g, "–") || null,
-      asOf: clean(box["nationalteam-update"]) || null,
+      years: clean(field(`national_years${n}`, `nationalyears${n}`)).replace(/-/g, "–") || null,
+      asOf: clean(field("national_team_update", "nationalteam-update")) || null,
     };
   }
   return null;

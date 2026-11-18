@@ -11,6 +11,18 @@ const API = "https://en.wikipedia.org/w/api.php";
 const HEADERS = { "User-Agent": "PlayYourCapsRight/1.0 (https://github.com/pdobson1/play-your-caps-right)" };
 const POSITIONS = new Set(["GK", "DF", "MF", "FW"]);
 
+/** GET a Wikipedia API URL, waiting and retrying when Wikimedia's rate limits answer 429 or 503. */
+async function getJSON(url, attempts = 4) {
+  for (let i = 1; ; i++) {
+    const res = await fetch(url, { headers: HEADERS });
+    if (res.ok) return res.json();
+    if (![429, 503].includes(res.status) || i >= attempts) throw new Error(`Wikipedia API returned ${res.status}`);
+    const wait = Math.min(Number(res.headers.get("retry-after")) || 10 * i, 60);
+    console.warn(`Wikipedia returned ${res.status}; retrying in ${wait}s.`);
+    await new Promise(r => setTimeout(r, wait * 1000));
+  }
+}
+
 /** Fetch the wikitext of up to 50 pages per request, following redirects. Returns Map<requestedTitle, text>. */
 async function fetchPages(titles) {
   const out = new Map();
@@ -21,9 +33,7 @@ async function fetchPages(titles) {
       action: "query", format: "json", formatversion: "2", redirects: "1",
       prop: "revisions", rvprop: "content", rvslots: "main", titles: batch.join("|"),
     }).forEach(([k, v]) => url.searchParams.set(k, v));
-    const res = await fetch(url, { headers: HEADERS });
-    if (!res.ok) throw new Error(`Wikipedia API returned ${res.status}`);
-    const json = await res.json();
+    const json = await getJSON(url);
     // map each requested title through normalisation and redirects to the final page title
     const alias = new Map();
     for (const { from, to } of [...(json.query.normalized || []), ...(json.query.redirects || [])]) alias.set(from, to);

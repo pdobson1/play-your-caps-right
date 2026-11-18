@@ -26,6 +26,21 @@ test("reads England senior caps and skips youth teams", () => {
   assert.deepEqual(englandCaps(KANE), { caps: 112, years: "2015–", asOf: "21:45, 16 November 2025 (UTC)" });
 });
 
+test("reads the renamed national_* infobox fields Wikipedia switched to in 2026", () => {
+  const shilton = `{{Infobox football biography
+| name = Peter Shilton
+| national_years1 = 1968–1972
+| national_team1 = [[England national under-23 football team|England U23]]
+| national_caps1 = 13
+| national_years2 = 1970–1990
+| national_team2 = [[England national football team|England]]<ref name="nat_record">{{cite news | url=https://example.com | title=Shilton}}</ref>
+| national_caps2 = 125
+| national_goals2 = [[List of goals|0]]
+| national_team_update = 22:10, 15 November 2026 (UTC)
+}}`;
+  assert.deepEqual(englandCaps(shilton), { caps: 125, years: "1970–1990", asOf: "22:10, 15 November 2026 (UTC)" });
+});
+
 test("handles players who also played for another country", () => {
   const rice = `{{Infobox football biography
 | nationalteam1 = [[Republic of Ireland national football team|Republic of Ireland]]
