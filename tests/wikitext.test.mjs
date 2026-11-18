@@ -41,6 +41,18 @@ test("reads the renamed national_* infobox fields Wikipedia switched to in 2026"
   assert.deepEqual(englandCaps(shilton), { caps: 125, years: "1970–1990", asOf: "22:10, 15 November 2026 (UTC)" });
 });
 
+test("reads caps written as a link, as on Billy Wright's page", () => {
+  const wright = `{{Infobox football biography
+| national_years1 = 1948
+| national_team1 = [[England national football B team|England B]]
+| national_caps1 = 1
+| national_years2 = 1946–1959
+| national_team2 = [[England national football team|England]]
+| national_caps2 = [[List of men's footballers with 100 or more international caps#Men's footballers with 100 or more international caps|105]]
+}}`;
+  assert.deepEqual(englandCaps(wright), { caps: 105, years: "1946–1959", asOf: null });
+});
+
 test("handles players who also played for another country", () => {
   const rice = `{{Infobox football biography
 | nationalteam1 = [[Republic of Ireland national football team|Republic of Ireland]]

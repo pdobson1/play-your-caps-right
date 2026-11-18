@@ -13,6 +13,11 @@ export function clean(value) {
     .trim();
 }
 
+/** Turn [[Target|label]] into "label" and [[Target]] into "Target", for numbers written as links. */
+export function unlink(value) {
+  return clean(value).replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, "$1").trim();
+}
+
 /** Find the template that starts at `start` (pointing at "{{") and return its inner text. */
 function templateBody(text, start) {
   let depth = 0;
@@ -72,11 +77,11 @@ export function englandCaps(wikitext) {
     const team = field(`national_team${n}`, `nationalteam${n}`);
     if (team === undefined) continue;
     if (!ENGLAND_SENIOR.test(clean(team))) continue;
-    const caps = parseInt(clean(field(`national_caps${n}`, `nationalcaps${n}`)), 10);
+    const caps = parseInt(unlink(field(`national_caps${n}`, `nationalcaps${n}`)), 10);
     if (!Number.isFinite(caps)) return null;
     return {
       caps,
-      years: clean(field(`national_years${n}`, `nationalyears${n}`)).replace(/-/g, "–") || null,
+      years: unlink(field(`national_years${n}`, `nationalyears${n}`)).replace(/-/g, "–") || null,
       asOf: clean(field("national_team_update", "nationalteam-update")) || null,
     };
   }
